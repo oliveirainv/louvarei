@@ -1,80 +1,83 @@
-[
-  {
-    "id": 1,
-    "numero": 1,
-    "titulo": "A Mighty Fortress Is Our God",
-    "arquivo": "letras/a-mighty-fortress-is-our-god.txt"
-  },
-  {
-    "id": 2,
-    "numero": 2,
-    "titulo": "Abide with Me",
-    "arquivo": "letras/abide-with-me.txt"
-  },
-  {
-    "id": 3,
-    "numero": 3,
-    "titulo": "All Hail the Power of Jesus' Name",
-    "arquivo": "letras/all-hail-the-power-of-jesus-name.txt"
-  },
-  {
-    "id": 4,
-    "numero": 4,
-    "titulo": "Amazing Grace",
-    "arquivo": "letras/amazing-grace.txt"
-  },
-  {
-    "id": 5,
-    "numero": 5,
-    "titulo": "Come, Thou Fount of Every Blessing",
-    "arquivo": "letras/come-thou-fount-of-every-blessing.txt"
-  },
-  {
-    "id": 6,
-    "numero": 6,
-    "titulo": "Holy, Holy, Holy",
-    "arquivo": "letras/holy-holy-holy.txt"
-  },
-  {
-    "id": 7,
-    "numero": 7,
-    "titulo": "Jesus, Lover of My Soul",
-    "arquivo": "letras/jesus-lover-of-my-soul.txt"
-  },
-  {
-    "id": 8,
-    "numero": 8,
-    "titulo": "Nearer, My God, to Thee",
-    "arquivo": "letras/nearer-my-god-to-thee.txt"
-  },
-  {
-    "id": 9,
-    "numero": 9,
-    "titulo": "Rock of Ages",
-    "arquivo": "letras/rock-of-ages.txt"
-  },
-  {
-    "id": 11,
-    "numero": 11,
-    "titulo": "What a Friend We Have in Jesus",
-    "arquivo": "letras/what-a-friend-we-have-in-jesus.txt"
-  },
-  {
-    "id": 10,
-    "numero": 10,
-    "titulo": "Tu és fiel, Senhor",
-    "arquivo": "letras/tu-es-fiel-senhor.txt"
-  },
-  {
-    "id": 12,
-    "numero": 12,
-    "titulo": "Grandioso és Tu!",
-    "arquivo": "letras/grandioso-es-tu.txt"
-  },
-  {
-    "id": 13,
-    "numero": 13,
-    "titulo": "Alvo Mais Que a Neve",
-    "arquivo": "letras/alvo-mais-que-a-neve.txt"
-  }
-]
+{
+  "ultimo_id": 13,
+  "hinos": [
+    {
+      "id": 1,
+      "numero": 1,
+      "titulo": "A Mighty Fortress Is Our God",
+      "arquivo": "letras/a-mighty-fortress-is-our-god.txt"
+    },
+    {
+      "id": 2,
+      "numero": 2,
+      "titulo": "Abide with Me",
+      "arquivo": "letras/abide-with-me.txt"
+    },
+    {
+      "id": 3,
+      "numero": 3,
+      "titulo": "All Hail the Power of Jesus' Name",
+      "arquivo": "letras/all-hail-the-power-of-jesus-name.txt"
+    },
+    {
+      "id": 4,
+      "numero": 4,
+      "titulo": "Amazing Grace",
+      "arquivo": "letras/amazing-grace.txt"
+    },
+    {
+      "id": 5,
+      "numero": 5,
+      "titulo": "Come, Thou Fount of Every Blessing",
+      "arquivo": "letras/come-thou-fount-of-every-blessing.txt"
+    },
+    {
+      "id": 6,
+      "numero": 6,
+      "titulo": "Holy, Holy, Holy",
+      "arquivo": "letras/holy-holy-holy.txt"
+    },
+    {
+      "id": 7,
+      "numero": 7,
+      "titulo": "Jesus, Lover of My Soul",
+      "arquivo": "letras/jesus-lover-of-my-soul.txt"
+    },
+    {
+      "id": 8,
+      "numero": 8,
+      "titulo": "Nearer, My God, to Thee",
+      "arquivo": "letras/nearer-my-god-to-thee.txt"
+    },
+    {
+      "id": 9,
+      "numero": 9,
+      "titulo": "Rock of Ages",
+      "arquivo": "letras/rock-of-ages.txt"
+    },
+    {
+      "id": 11,
+      "numero": 11,
+      "titulo": "What a Friend We Have in Jesus",
+      "arquivo": "letras/what-a-friend-we-have-in-jesus.txt"
+    },
+    {
+      "id": 10,
+      "numero": 101,
+      "titulo": "Tu és fiel, Senhor",
+      "arquivo": "letras/tu-es-fiel-senhor.txt"
+    },
+    {
+      "id": 12,
+      "numero": 12,
+      "titulo": "Grandioso és Tu!",
+      "arquivo": "letras/grandioso-es-tu.txt"
+    },
+    {
+      "id": 13,
+      "numero": 13,
+      "titulo": "Alvo Mais Que a Neve",
+      "arquivo": "letras/alvo-mais-que-a-neve.txt"
+    }
+  ]
+}
