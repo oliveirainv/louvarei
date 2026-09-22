@@ -30,6 +30,11 @@ h1 {
 ol {
   padding-left: 2rem;
 }
+#lista-hinos {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
 li {
   margin: 0 0 14px;
   font-size: 1.28rem;
@@ -75,24 +80,20 @@ li {
 
 .ordenacao {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  margin: -8px 0 26px;
+  gap: 5px;
+  margin: -8px 0 20px;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
-.ordenacao button {
-  padding: 8px 13px;
-  border: 1px solid #000;
-  border-radius: 6px;
+.ordenacao select {
+  padding: 3px 5px;
+  border: 1px solid #777;
+  border-radius: 2px;
   background: #fff;
   color: #000;
   font: inherit;
-  cursor: pointer;
-}
-.ordenacao button.ativo {
-  background: #000;
-  color: #fff;
 }
 
 @media (max-width: 600px) {
@@ -107,12 +108,14 @@ li {
   <h1>Louvores</h1>
 
   <div class="ordenacao">
-    <span>Ordenar por:</span>
-    <button id="btnNumero" type="button" class="ativo" onclick="mudarOrdenacao('numero')">Número</button>
-    <button id="btnAZ" type="button" onclick="mudarOrdenacao('titulo')">A–Z</button>
+    <label for="ordenar">Ordenar por:</label>
+    <select id="ordenar" onchange="mudarOrdenacao(this.value)">
+      <option value="numero" selected>Número</option>
+      <option value="titulo">Nome</option>
+    </select>
   </div>
 
-  <ol id="lista-hinos"></ol>
+  <ul id="lista-hinos"></ul>
   <p id="mensagem" class="message"></p>
 </main>
 
@@ -137,10 +140,6 @@ async function carregarIndice() {
 
 function mudarOrdenacao(tipo) {
   ordenacaoAtual = tipo;
-
-  document.getElementById('btnNumero').classList.toggle('ativo', tipo === 'numero');
-  document.getElementById('btnAZ').classList.toggle('ativo', tipo === 'titulo');
-
   renderizarLista();
 }
 
