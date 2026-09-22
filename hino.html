@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Louvores</title>
+<style>
+:root {
+  --text: #000;
+  --link: #0000EE;
+  --bg: #fff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 34px 20px 56px;
+}
+h1 {
+  font-size: 2.2rem;
+  line-height: 1.15;
+  margin: 0 0 28px;
+}
+ol {
+  padding-left: 2rem;
+}
+li {
+  margin: 0 0 14px;
+  font-size: 1.28rem;
+  line-height: 1.45;
+}
+.index-link {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.index-button {
+  display: inline-block;
+  margin: 0 0 28px;
+  padding: 14px 22px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1;
+  background: #000;
+}
+.index-button:hover,
+.index-button:focus {
+  background: #222;
+}
+.hymn-number {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: -14px 0 22px;
+}
+.letter {
+  font-size: 1.28rem;
+  line-height: 1.62;
+  white-space: pre-wrap;
+}
+.message {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+@media (max-width: 600px) {
+  main { padding: 26px 18px 48px; }
+  h1 { font-size: 1.9rem; }
+  li, .letter { font-size: 1.16rem; }
+}
+</style>
+</head>
+<body>
+<main>
+  <a class="index-button" href="index.html">Índice</a>
+  <h1 id="titulo">Carregando...</h1>
+  <div id="numero" class="hymn-number"></div>
+  <div id="letra" class="letter"></div>
+  <p id="mensagem" class="message"></p>
+</main>
+
+<script>
+async function carregarHino() {
+  const titulo = document.getElementById('titulo');
+  const numero = document.getElementById('numero');
+  const letra = document.getElementById('letra');
+  const mensagem = document.getElementById('mensagem');
+
+  const parametros = new URLSearchParams(window.location.search);
+  const id = parametros.get('id');
+
+  if (!id) {
+    titulo.textContent = 'Hino não informado';
+    mensagem.textContent = 'Volte ao índice e escolha um hino.';
+    return;
+  }
+
+  try {
+    const respostaCatalogo = await fetch('hinos.json', { cache: 'no-store' });
+    if (!respostaCatalogo.ok) throw new Error('Não foi possível carregar hinos.json');
+
+    const hinos = await respostaCatalogo.json();
+    const hino = hinos.find(item => String(item.id) === String(id));
+
+    if (!hino) {
+      titulo.textContent = 'Hino não encontrado';
+      mensagem.textContent = 'Volte ao índice e escolha outro hino.';
+      return;
+    }
+
+    titulo.textContent = hino.titulo;
+    numero.textContent = `Hino ${hino.numero}`;
+    document.title = `${hino.titulo} — Louvores`;
+
+    const respostaLetra = await fetch(hino.arquivo, { cache: 'no-store' });
+    if (!respostaLetra.ok) throw new Error('Não foi possível carregar a letra do hino');
+
+    letra.textContent = await respostaLetra.text();
+  } catch (erro) {
+    titulo.textContent = 'Erro ao carregar';
+    mensagem.textContent = 'Não foi possível carregar este hino.';
+    console.error(erro);
+  }
+}
+
+carregarHino();
+</script>
+</body>
+</html>

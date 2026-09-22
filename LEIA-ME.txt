@@ -1,0 +1,21 @@
+LOUVORES — ESTRUTURA DINÂMICA
+
+Arquivos principais:
+- index.html   -> monta o índice lendo hinos.json
+- hino.html    -> página única que carrega qualquer hino pelo parâmetro ?id=
+- hinos.json   -> catálogo dos hinos
+- letras/      -> um arquivo .txt por hino
+
+Para adicionar um novo hino:
+1. Crie o arquivo da letra dentro de letras/, por exemplo:
+   letras/meu-hino.txt
+
+2. Acrescente uma entrada em hinos.json, por exemplo:
+   {
+     "id": 11,
+     "numero": 11,
+     "titulo": "Meu Hino",
+     "arquivo": "letras/meu-hino.txt"
+   }
+
+O índice é ordenado alfabeticamente pelo JavaScript.
