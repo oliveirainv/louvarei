@@ -117,13 +117,13 @@ li {
 </head>
 <body>
 <main>
-  <h1>Louvores</h1>
+  <h1>Nosso Hinário</h1>
 
   <div class="ordenacao">
     <label for="ordenar">Ordenar por:</label>
     <select id="ordenar" onchange="mudarOrdenacao(this.value)">
-      <option value="numero" selected>Número</option>
-      <option value="titulo">Nome</option>
+      <option value="numero">Número</option>
+      <option value="titulo" selected>Nome</option>
     </select>
   </div>
 
@@ -137,7 +137,7 @@ li {
 
 <script>
 let hinosCarregados = [];
-let ordenacaoAtual = 'numero';
+let ordenacaoAtual = 'titulo';
 
 async function carregarIndice() {
   const mensagem = document.getElementById('mensagem');
