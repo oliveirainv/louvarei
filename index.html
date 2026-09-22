@@ -96,6 +96,18 @@ li {
   font: inherit;
 }
 
+.admin-link {
+  margin-top: 42px;
+  padding-top: 18px;
+  border-top: 1px solid #ddd;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.88rem;
+  text-align: right;
+}
+.admin-link a {
+  color: #555;
+}
+
 @media (max-width: 600px) {
   main { padding: 26px 18px 48px; }
   h1 { font-size: 1.9rem; }
@@ -117,6 +129,10 @@ li {
 
   <ul id="lista-hinos"></ul>
   <p id="mensagem" class="message"></p>
+
+  <div class="admin-link">
+    <a href="admin.html">Administrador</a>
+  </div>
 </main>
 
 <script>
@@ -130,7 +146,8 @@ async function carregarIndice() {
     const resposta = await fetch('hinos.json', { cache: 'no-store' });
     if (!resposta.ok) throw new Error('Não foi possível carregar hinos.json');
 
-    hinosCarregados = await resposta.json();
+    const catalogo = await resposta.json();
+    hinosCarregados = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
     renderizarLista();
   } catch (erro) {
     mensagem.textContent = 'Não foi possível carregar o índice de hinos.';

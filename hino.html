@@ -112,7 +112,8 @@ async function carregarHino() {
     const respostaCatalogo = await fetch('hinos.json', { cache: 'no-store' });
     if (!respostaCatalogo.ok) throw new Error('Não foi possível carregar hinos.json');
 
-    const hinos = await respostaCatalogo.json();
+    const catalogo = await respostaCatalogo.json();
+    const hinos = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
     const hino = hinos.find(item => String(item.id) === String(id));
 
     if (!hino) {
