@@ -72,6 +72,29 @@ li {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1rem;
 }
+
+.ordenacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 26px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+.ordenacao button {
+  padding: 8px 13px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  cursor: pointer;
+}
+.ordenacao button.ativo {
+  background: #000;
+  color: #fff;
+}
+
 @media (max-width: 600px) {
   main { padding: 26px 18px 48px; }
   h1 { font-size: 1.9rem; }
@@ -82,37 +105,70 @@ li {
 <body>
 <main>
   <h1>Louvores</h1>
+
+  <div class="ordenacao">
+    <span>Ordenar por:</span>
+    <button id="btnNumero" type="button" class="ativo" onclick="mudarOrdenacao('numero')">Número</button>
+    <button id="btnAZ" type="button" onclick="mudarOrdenacao('titulo')">A–Z</button>
+  </div>
+
   <ol id="lista-hinos"></ol>
   <p id="mensagem" class="message"></p>
 </main>
 
 <script>
+let hinosCarregados = [];
+let ordenacaoAtual = 'numero';
+
 async function carregarIndice() {
-  const lista = document.getElementById('lista-hinos');
   const mensagem = document.getElementById('mensagem');
 
   try {
     const resposta = await fetch('hinos.json', { cache: 'no-store' });
     if (!resposta.ok) throw new Error('Não foi possível carregar hinos.json');
 
-    const hinos = await resposta.json();
-
-    hinos
-      .slice()
-      .sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR', { sensitivity: 'base' }))
-      .forEach(hino => {
-        const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.className = 'index-link';
-        link.href = `hino.html?id=${encodeURIComponent(hino.id)}`;
-        link.textContent = hino.titulo;
-        li.appendChild(link);
-        lista.appendChild(li);
-      });
+    hinosCarregados = await resposta.json();
+    renderizarLista();
   } catch (erro) {
     mensagem.textContent = 'Não foi possível carregar o índice de hinos.';
     console.error(erro);
   }
+}
+
+function mudarOrdenacao(tipo) {
+  ordenacaoAtual = tipo;
+
+  document.getElementById('btnNumero').classList.toggle('ativo', tipo === 'numero');
+  document.getElementById('btnAZ').classList.toggle('ativo', tipo === 'titulo');
+
+  renderizarLista();
+}
+
+function renderizarLista() {
+  const lista = document.getElementById('lista-hinos');
+  lista.innerHTML = '';
+
+  const hinos = hinosCarregados.slice();
+
+  if (ordenacaoAtual === 'numero') {
+    hinos.sort((a, b) => Number(a.numero) - Number(b.numero));
+  } else {
+    hinos.sort((a, b) =>
+      a.titulo.localeCompare(b.titulo, 'pt-BR', { sensitivity: 'base' })
+    );
+  }
+
+  hinos.forEach(hino => {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+
+    link.className = 'index-link';
+    link.href = `hino.html?id=${encodeURIComponent(hino.id)}`;
+    link.textContent = `${hino.numero} — ${hino.titulo}`;
+
+    li.appendChild(link);
+    lista.appendChild(li);
+  });
 }
 
 carregarIndice();
