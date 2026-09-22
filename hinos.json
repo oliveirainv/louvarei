@@ -70,5 +70,11 @@
     "numero": 12,
     "titulo": "Grandioso és Tu!",
     "arquivo": "letras/grandioso-es-tu.txt"
+  },
+  {
+    "id": 13,
+    "numero": 13,
+    "titulo": "Alvo Mais Que a Neve",
+    "arquivo": "letras/alvo-mais-que-a-neve.txt"
   }
 ]
