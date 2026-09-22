@@ -64,5 +64,11 @@
     "numero": 10,
     "titulo": "Tu és fiel, Senhor",
     "arquivo": "letras/tu-es-fiel-senhor.txt"
+  },
+  {
+    "id": 12,
+    "numero": 12,
+    "titulo": "Grandioso és Tu!",
+    "arquivo": "letras/grandioso-es-tu.txt"
   }
 ]
