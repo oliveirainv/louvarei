@@ -57,6 +57,43 @@ label {
   margin: 0 0 6px;
 }
 .field { margin: 0 0 16px; }
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.publish-card {
+  width: min(390px, 100%);
+  border: 1px solid #b8c4d6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #f7f9fc;
+}
+.publish-card p {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #3f4854;
+}
+.publish-btn {
+  width: 100%;
+  border-color: #234a7d;
+  background: #234a7d;
+  color: #fff;
+  font-weight: 700;
+}
+.publish-btn:hover {
+  filter: brightness(0.95);
+}
+
 .toolbar {
   display: flex;
   gap: 8px;
@@ -105,6 +142,12 @@ th:first-child, td:first-child { width: 90px; text-align: right; }
   flex-wrap: wrap;
 }
 @media (max-width: 600px) {
+  .admin-topbar {
+    flex-direction: column;
+  }
+  .publish-card {
+    width: 100%;
+  }
   th, td { padding: 8px 5px; }
   .actions button { padding: 7px 9px; }
 }
@@ -126,14 +169,22 @@ th:first-child, td:first-child { width: 90px; text-align: right; }
 
   <section id="adminArea" class="hidden">
     <div id="listaArea">
-      <div class="toolbar">
-        <button class="primary" onclick="novoHino()">Novo hino</button>
-        <button id="publicarBtn" onclick="publicar()">Publicar alterações</button>
-        <button onclick="carregarLista()">Atualizar lista</button>
-        <button onclick="sair()">Sair</button>
-      </div>
+      <div class="admin-topbar">
+        <div class="admin-actions">
+          <button class="primary" onclick="novoHino()">Novo hino</button>
+          <button onclick="sair()">Sair</button>
+        </div>
 
-      <p class="note">O ID é interno e não é exibido. Salvar grava no GitHub sem publicar o site. Use “Publicar alterações” quando quiser colocar tudo no ar.</p>
+        <div class="publish-card">
+          <button id="publicarBtn" class="publish-btn" onclick="publicar()">Publicar alterações</button>
+          <p>
+            Use este botão somente quando terminar todas as suas edições. Por exemplo, inclua ou altere vários hinos antes de publicar, em vez de publicar após cada alteração.
+          </p>
+          <p>
+            Recomendado: publicar no máximo 2 ou 3 vezes por semana, pois o site utiliza hospedagem gratuita e há um limite mensal de publicações.
+          </p>
+        </div>
+      </div>
 
       <div class="tablewrap">
         <table>
