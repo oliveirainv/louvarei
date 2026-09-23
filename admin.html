@@ -128,11 +128,12 @@ th:first-child, td:first-child { width: 90px; text-align: right; }
     <div id="listaArea">
       <div class="toolbar">
         <button class="primary" onclick="novoHino()">Novo hino</button>
+        <button id="publicarBtn" onclick="publicar()">Publicar alterações</button>
         <button onclick="carregarLista()">Atualizar lista</button>
         <button onclick="sair()">Sair</button>
       </div>
 
-      <p class="note">O ID é interno e não é exibido. O número é definido pelo administrador.</p>
+      <p class="note">O ID é interno e não é exibido. Salvar grava no GitHub sem publicar o site. Use “Publicar alterações” quando quiser colocar tudo no ar.</p>
 
       <div class="tablewrap">
         <table>
@@ -349,7 +350,7 @@ async function salvar() {
     await carregarLista(true);
     setTimeout(() => {
       cancelarEdicao();
-      setMsg('listaMsg', 'Alteração salva no GitHub. O Netlify fará o novo deploy automaticamente.', 'success');
+      setMsg('listaMsg', 'Alteração salva no GitHub. Ela ainda não foi publicada no site.', 'success');
     }, 500);
   } catch (e) {
     setMsg('formMsg', e.message, 'error');
@@ -373,6 +374,28 @@ async function excluirAtual() {
     setMsg('listaMsg', data.message || 'Hino excluído.', 'success');
   } catch (e) {
     setMsg('formMsg', e.message, 'error');
+  }
+}
+
+
+async function publicar() {
+  const btn = document.getElementById('publicarBtn');
+  if (!confirm('Publicar agora todas as alterações salvas no GitHub?')) return;
+
+  btn.disabled = true;
+  setMsg('listaMsg', 'Solicitando publicação...');
+
+  try {
+    const data = await api('POST', { action:'publish' });
+    setMsg(
+      'listaMsg',
+      data.message || 'Publicação solicitada. Aguarde o deploy do Netlify.',
+      'success'
+    );
+  } catch (e) {
+    setMsg('listaMsg', e.message, 'error');
+  } finally {
+    btn.disabled = false;
   }
 }
 
