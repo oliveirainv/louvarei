@@ -184,7 +184,7 @@ async function createHymn(numero, titulo, letra) {
   await putFile(
     path,
     String(letra).trim() + "\n",
-    `Adicionar letra do hino ${numero}`
+    `[skip netlify] Adicionar letra do hino ${numero}`
   );
 
   // 2) Update catalog.
@@ -200,14 +200,14 @@ async function createHymn(numero, titulo, letra) {
     await putFile(
       "hinos.json",
       catalogText(catalog),
-      `Adicionar hino ${numero} - ${safeTitle}`,
+      `[skip netlify] Adicionar hino ${numero} - ${safeTitle}`,
       catalogSha
     );
   } catch (e) {
     // Best-effort rollback of the newly-created lyric file if catalog update fails.
     try {
       const created = await readFile(path);
-      await deleteFile(path, `Rollback da inclusão do hino ${numero}`, created.sha);
+      await deleteFile(path, `[skip netlify] Rollback da inclusão do hino ${numero}`, created.sha);
     } catch (_) {}
     throw e;
   }
@@ -232,7 +232,7 @@ async function updateHymn(id, numero, titulo, letra) {
   await putFile(
     hymn.arquivo,
     String(letra).trim() + "\n",
-    `Atualizar letra do hino ${numero}`,
+    `[skip netlify] Atualizar letra do hino ${numero}`,
     lyricFile.sha
   );
 
@@ -242,7 +242,7 @@ async function updateHymn(id, numero, titulo, letra) {
   await putFile(
     "hinos.json",
     catalogText(catalog),
-    `Atualizar hino ${numero} - ${safeTitle}`,
+    `[skip netlify] Atualizar hino ${numero} - ${safeTitle}`,
     catalogSha
   );
 
@@ -261,7 +261,7 @@ async function deleteHymn(id) {
   await putFile(
     "hinos.json",
     catalogText(catalog),
-    `Excluir hino ${hymn.numero} - ${hymn.titulo}`,
+    `[skip netlify] Excluir hino ${hymn.numero} - ${hymn.titulo}`,
     catalogSha
   );
 
@@ -270,7 +270,7 @@ async function deleteHymn(id) {
     const lyric = await readFile(hymn.arquivo);
     await deleteFile(
       hymn.arquivo,
-      `Excluir letra do hino ${hymn.numero}`,
+      `[skip netlify] Excluir letra do hino ${hymn.numero}`,
       lyric.sha
     );
   } catch (e) {
@@ -279,6 +279,30 @@ async function deleteHymn(id) {
   }
 
   return { hymn };
+}
+
+
+async function publishChanges() {
+  const path = ".publish-trigger";
+
+  let sha = null;
+  try {
+    const current = await readFile(path);
+    sha = current.sha;
+  } catch (_) {
+    // First publication: file does not exist yet.
+  }
+
+  const stamp = new Date().toISOString() + "\n";
+
+  await putFile(
+    path,
+    stamp,
+    `Publicar alterações em ${stamp.trim()}`,
+    sha
+  );
+
+  return { published_at: stamp.trim() };
 }
 
 export default async (req) => {
@@ -313,7 +337,7 @@ export default async (req) => {
     if (action === "create") {
       const hymn = await createHymn(Number(body.numero), body.titulo, body.letra);
       return jsonResponse(200, {
-        message: `Hino ${hymn.numero} criado. O Netlify fará o novo deploy automaticamente.`,
+        message: `Hino ${hymn.numero} criado e salvo no GitHub. Ainda não publicado.`,
         hino: hymn
       });
     }
@@ -321,7 +345,7 @@ export default async (req) => {
     if (action === "update") {
       const hymn = await updateHymn(body.id, Number(body.numero), body.titulo, body.letra);
       return jsonResponse(200, {
-        message: `Hino ${hymn.numero} atualizado. O Netlify fará o novo deploy automaticamente.`,
+        message: `Hino ${hymn.numero} atualizado e salvo no GitHub. Ainda não publicado.`,
         hino: hymn
       });
     }
@@ -329,8 +353,16 @@ export default async (req) => {
     if (action === "delete") {
       const result = await deleteHymn(body.id);
       return jsonResponse(200, {
-        message: result.warning || `Hino ${result.hymn.numero} excluído. O Netlify fará o novo deploy automaticamente.`,
+        message: result.warning || `Hino ${result.hymn.numero} excluído do GitHub. Ainda não publicado.`,
         warning: result.warning || null
+      });
+    }
+
+    if (action === "publish") {
+      const result = await publishChanges();
+      return jsonResponse(200, {
+        message: "Publicação solicitada. O Netlify deverá iniciar um único deploy de produção.",
+        ...result
       });
     }
 
