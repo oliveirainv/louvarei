@@ -235,6 +235,11 @@ th:first-child, td:first-child { width: 90px; text-align: right; }
         <textarea id="letra"></textarea>
       </div>
 
+      <div class="field">
+        <label for="copyright">Copyright</label>
+         <textarea id="copyright"></textarea>
+      </div>
+
       <div class="form-actions">
         <button class="primary" id="salvarBtn" onclick="salvar()">Salvar</button>
         <button onclick="cancelarEdicao()">Cancelar</button>
@@ -360,6 +365,13 @@ async function editar(id) {
   document.getElementById('numero').value = hino.numero;
   document.getElementById('titulo').value = hino.titulo;
   document.getElementById('letra').value = 'Carregando letra...';
+
+  //Autor e copyright não são exigidos
+  if(hino.autor != undefined && hino.copyright != undefined)
+  {                    
+    document.getElementById('copyright').textContent = hino.autor + ' - ' + hino.copyright;
+  }
+
   document.getElementById('excluirBtn').classList.remove('hidden');
   setMsg('formMsg', '');
   mostrarFormulario();

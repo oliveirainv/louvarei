@@ -1,143 +1,221 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+
+<html lang="pt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Louvores</title>
-<style>
-:root {
-  --text: #000;
-  --link: #0000EE;
-  --bg: #fff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
-}
-main {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 34px 20px 56px;
-}
-h1 {
-  font-size: 2.2rem;
-  line-height: 1.15;
-  margin: 0 0 28px;
-}
-ol {
-  padding-left: 2rem;
-}
-li {
-  margin: 0 0 14px;
-  font-size: 1.28rem;
-  line-height: 1.45;
-}
-.index-link {
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.index-button {
-  display: inline-block;
-  margin: 0 0 28px;
-  padding: 14px 22px;
-  border: 2px solid #000;
-  border-radius: 8px;
-  color: #fff;
-  text-decoration: none;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.08rem;
-  font-weight: 700;
-  line-height: 1;
-  background: #000;
-}
-.index-button:hover,
-.index-button:focus {
-  background: #222;
-}
-.hymn-number {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
-  margin: -14px 0 22px;
-}
-.letter {
-  font-size: 1.28rem;
-  line-height: 1.62;
-  white-space: pre-wrap;
-}
-.message {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
-}
-@media (max-width: 600px) {
-  main { padding: 26px 18px 48px; }
-  h1 { font-size: 1.9rem; }
-  li, .letter { font-size: 1.16rem; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./styles/hinario.css">
+    <title>NOSSO HINARIO</title>
+
+    <style>
+        body{
+            background-color: var(--bodyBackground);
+        }
+    </style>
 </head>
+
+
 <body>
-<main>
-  <a class="index-button" href="index.html">Índice</a>
-  <h1 id="titulo">Carregando...</h1>
-  <div id="numero" class="hymn-number"></div>
-  <div id="letra" class="letter"></div>
-  <p id="mensagem" class="message"></p>
+    <main>
+        <br>
+        <a class="index-button" href="index.html">ÍNDICE</a>
+        
+        <div class="hymnGroup">
+            <p id="hymnHeader">TÍTULO</p>
+            <p id="letra">Carregando...</p>
+            <br/>
+            <p id="copyright"></p>
+        </div>
+        
+        <p id="mensagem"></p>
+        <div>
+            <a class="index-button" href="index.html">ÍNDICE</a>
+            <a href=# class="index-button">SOBE</a>            
+        </div>
 
-  <div style="margin-top:32px;">
-    <a class="index-button" href="index.html">Índice</a>
-  </div>
-</main>
+    </main> 
 
-<script>
-async function carregarHino() {
-  const titulo = document.getElementById('titulo');
-  const numero = document.getElementById('numero');
-  const letra = document.getElementById('letra');
-  const mensagem = document.getElementById('mensagem');
+    <script>
+        let hinosCarregados = [];
+        const params = new URLSearchParams(document.location.search);
+        const Id1 = params.get("Id");
 
-  const parametros = new URLSearchParams(window.location.search);
-  const id = parametros.get('id');
+        const mensagem = document.getElementById('mensagem');
 
-  if (!id) {
-    titulo.textContent = 'Hino não informado';
-    mensagem.textContent = 'Volte ao índice e escolha um hino.';
-    return;
-  }
 
-  try {
-    const respostaCatalogo = await fetch('hinos.json', { cache: 'no-store' });
-    if (!respostaCatalogo.ok) throw new Error('Não foi possível carregar hinos.json');
+        async function CarregaJsonDosHinos() {       
 
-    const catalogo = await respostaCatalogo.json();
-    const hinos = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
-    const hino = hinos.find(item => String(item.id) === String(id));
+        try {
+                //console.log("CarregarDados");
 
-    if (!hino) {
-      titulo.textContent = 'Hino não encontrado';
-      mensagem.textContent = 'Volte ao índice e escolha outro hino.';
-      return;
-    }
+                if (window.location.protocol === 'file:') {
+                    throw new Error('Este aplicativo deve ser aberto por um servidor local. Execute "python -m http.server" e abra http://localhost:8000');
+                }
 
-    titulo.textContent = hino.titulo;
-    numero.textContent = `Hino ${hino.numero}`;
-    document.title = `${hino.titulo} — Louvores`;
+                const resposta = await fetch('./json/hinos.json', { cache: 'no-store' });
 
-    const respostaLetra = await fetch(hino.arquivo, { cache: 'no-store' });
-    if (!respostaLetra.ok) throw new Error('Não foi possível carregar a letra do hino');
+                if (!resposta.ok) throw new Error('Não foi possível carregar hinos.json (erro ' + resposta.status + ')');
 
-    letra.textContent = await respostaLetra.text();
-  } catch (erro) {
-    titulo.textContent = 'Erro ao carregar';
-    mensagem.textContent = 'Não foi possível carregar este hino.';
-    console.error(erro);
-  }
-}
+                const catalogo = await resposta.json();
 
-carregarHino();
-</script>
-</body>
+                //Se o json for um array usa "catalogo". Se houver um membro que não é array, procura "catalogo.hinos". Se este não existir devolve []
+                hinosCarregados = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
+
+                console.log('Hinos carregados: ' + hinosCarregados.length);
+
+                if(hinosCarregados.length>0)
+                {
+                    Hino_Monta();
+                }
+                else{
+                    throw new Error('O arquivo do índice está vazio.');
+                }
+
+            } catch (erro) {
+                mensagem.textContent = 'Não foi possível carregar o índice de hinos.' +  erro.message;
+            }
+        }
+
+        //PARA TESTAR DELAY DE FETCH
+        function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+
+        function Hino_Monta()
+        {
+            let hino = hinosCarregados.find(h => String(h.id) === String(Id1));
+
+            if(hino != null)
+            {
+                document.getElementById('hymnHeader').textContent = hino.numero + ' - ' + hino.titulo;
+
+                //document.getElementById('hymnNumber').textContent = "Num. " + hino.numero;
+
+                //Busca a letra do hino no arquivo especificado em hino.arquivo
+                //O NOME DE ARQUIVO TEM QUE SER IDÊNTIICO AO DO DISCO (CAIXA ALTA/BAIXA)
+                Song_GetFile(hino.arquivo);
+
+                if(hino.autor != undefined && hino.copyright != undefined)
+                {                    
+                    document.getElementById('copyright').textContent = hino.autor + ' - ' + hino.copyright;
+                }
+                else
+                {                    
+                    document.getElementById('copyright').classList.add('hidden');
+                }
+            }
+            else{
+                mensagem.textContent = 'Hino não encontrado: ' + Id1;
+            }
+        }
+
+        function Parameters_FontSize_Load()
+        {
+            if(typeof(Storage) != "undefined") {
+                let storedFontSize = localStorage.getItem("baseFontSize");
+                if(storedFontSize != null) {
+
+                    let n = parseFloat(storedFontSize);
+                    if(isNaN(n) || n < 0.5 || n > 2)
+                    {
+                        console.warn("Valor inválido de baseFontSize no localStorage: " + storedFontSize);
+
+                        return;
+                    }
+
+                    //Atualiza variável CSS --baseFontSize com o valor armazenado
+                    document.documentElement.style.setProperty('--baseFontSize', (n + 'em'));
+
+                    console.log("Tamanho da fonte para o hino: " + n);
+                }
+            }
+        }
+
+
+        function Parameters_Theme_Load()
+        {
+            if(typeof(Storage) != "undefined") 
+            {
+                let storedThemeMode = localStorage.getItem("themeMode");
+
+                console.log("Modo de tema armazenado: " + storedThemeMode);
+
+                if(storedThemeMode != null) {
+
+                    //ThemeMode_Toggle({ target: themeRadio });
+                    ThemeMode_Toggle({target:{value:storedThemeMode}});
+                }
+            }
+        }
+
+        function ThemeMode_Toggle(e) {
+            let element = document.body;
+
+            if(e.target.value == "1")
+            {   
+                element.classList.remove("darkTheme");         
+                element.classList.add("lightTheme");
+            }
+            else if(e.target.value == "2")
+            {
+                //document.body.classList.remove("dark-mode");
+                //Parameters_Theme_Save("light");
+                element.classList.remove("lightTheme");
+                element.classList.add("darkTheme");
+            }
+        }
+
+
+        async function Song_GetFile(arquivoHino)
+        {
+            try
+            {
+                if (window.location.protocol === 'file:') {
+                    throw new Error('Este aplicativo deve ser aberto por um servidor local. Execute "python -m http.server" e abra http://localhost:8000');
+                }
+
+                const resposta = await fetch(arquivoHino, { cache: 'no-store' });
+
+                if (!resposta.ok) throw new Error('Não foi possível carregar o arquivo do hino (erro ' + resposta.status + ')');
+
+                document.getElementById('letra').textContent =  await resposta.text();
+            
+            } catch (erro) {
+                console.error('Não foi possível carregar a letra deste hino. ' +  erro.message);
+                mensagem.textContent = 'Não foi possível carregar o arquivo do hino. ' +  erro.message;
+            }
+        }
+
+        function Relatorio()
+        {
+            let txt = '';
+            for(let i=0;i<hinosCarregados.length;i++)
+            {
+                txt += "==========\n";
+                txt += hinosCarregados[i].id + '\n' + hinosCarregados[i].titulo + '\n' + hinosCarregados[i].numero + '\n' + hinosCarregados[i].arquivo;
+
+            }
+
+            console.log(txt);
+        }
+
+
+        window.onload = function() {
+        
+            //Atualiza variáveis globais
+            Parameters_FontSize_Load();
+            Parameters_Theme_Load();   
+
+            //Testa delay
+           // delay(3000).then(() => {console.log("xxxxxxx This runs after 2 seconds"); CarregaJsonDosHinos();});
+
+            CarregaJsonDosHinos();
+
+            //console.log('Id: ' + Id1); // + ' - sortBy: ' + sortBy + ' - sortDirection: ' + sortDirection);
+        };
+    </script>
+    </main>
+    </body>
 </html>

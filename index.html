@@ -1,193 +1,106 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+
+<html lang="pt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nosso Hinário</title>
-<style>
-:root {
-  --text: #000;
-  --link: #0000EE;
-  --bg: #fff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
-}
-main {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 34px 20px 56px;
-}
-h1 {
-  font-size: 2.2rem;
-  line-height: 1.15;
-  margin: 0 0 28px;
-}
-ol {
-  padding-left: 2rem;
-}
-#lista-hinos {
-  list-style: none;
-  padding-left: 0;
-  margin-left: 0;
-}
-li {
-  margin: 0 0 14px;
-  font-size: 1.28rem;
-  line-height: 1.45;
-}
-.index-link {
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.index-button {
-  display: inline-block;
-  margin: 0 0 28px;
-  padding: 14px 22px;
-  border: 2px solid #000;
-  border-radius: 8px;
-  color: #fff;
-  text-decoration: none;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.08rem;
-  font-weight: 700;
-  line-height: 1;
-  background: #000;
-}
-.index-button:hover,
-.index-button:focus {
-  background: #222;
-}
-.hymn-number {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
-  margin: -14px 0 22px;
-}
-.letter {
-  font-size: 1.28rem;
-  line-height: 1.62;
-  white-space: pre-wrap;
-}
-.message {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.ordenacao {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 5px;
-  margin: -8px 0 20px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.9rem;
-}
-.ordenacao select {
-  padding: 3px 5px;
-  border: 1px solid #777;
-  border-radius: 2px;
-  background: #fff;
-  color: #000;
-  font: inherit;
-}
+    <link rel="stylesheet" href="./styles/hinario.css">
+    <script src="./scripts/hinario.js" type="text/javascript" defer></script>
 
-.admin-link {
-  margin-top: 42px;
-  padding-top: 18px;
-  border-top: 1px solid #ddd;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.88rem;
-  text-align: right;
-}
-.admin-link a {
-  color: #555;
-}
-
-@media (max-width: 600px) {
-  main { padding: 26px 18px 48px; }
-  h1 { font-size: 1.9rem; }
-  li, .letter { font-size: 1.16rem; }
-}
-</style>
+    <title>NOSSO HINARIO</title>
 </head>
 <body>
-<main>
-  <h1>Nosso Hinário</h1>
+    <table id="headerGroup" style="width:100%">
+<!--         <colgroup>
+            <col style="background-color:red">
+            <col style="background-color:rgb(17, 0, 255)">
+            <col style="background-color:rgb(190, 178, 0)">
+        </colgroup> -->
 
-  <div class="ordenacao">
-    <label for="ordenar">Ordenar por:</label>
-    <select id="ordenar" onchange="mudarOrdenacao(this.value)">
-      <option value="numero">Número</option>
-      <option value="titulo" selected>Nome</option>
-    </select>
-  </div>
+        <tr>
+            <!-- Não estou usando ainda este menu principal-->
+            <td id="hamburgerIcon" style="visibility: hidden;">
+                &#9776;
+            </td>
 
-  <ul id="lista-hinos"></ul>
-  <p id="mensagem" class="message"></p>
+            <td id="headerTitle" >
+                NOSSO HINÁRIO
+            </td>
 
-  <div class="admin-link">
-    <a href="admin.html">Administrador</a>
-  </div>
-</main>
+            <td id="menuIcon"  onclick="openNav()">
+                &#8942;
+            </td>
+        </tr>
+    </table>
 
-<script>
-let hinosCarregados = [];
-let ordenacaoAtual = 'titulo';
+    <div id="sideMenu">
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" onclick="OpenFontSizeMenu()">Aa</a>
+            <hr>
+            <a href="javascript:void(0)" onclick="OpenSortMenu()">Ordenar</a>
+            <hr>
+            <a href="javascript:void(0)" onclick="OpenThemeMenu()">Cor do fundo</a>
+            <hr>
+            <a href="javascript:void(0)" onclick="OpenAboutMenu()">Sobre</a>
+        </div>
 
-async function carregarIndice() {
-  const mensagem = document.getElementById('mensagem');
+        <div id="fontSizeMenu" class="fontSizeMenu">
+            <div>
+                <label for="fontSizeRange">Aa</label>
+                <input type="range" id="fontSizeRange" class="slidecontainer" min="0.5" max="2" step="0.1">
+            </div>
+        </div>
 
-  try {
-    const resposta = await fetch('hinos.json', { cache: 'no-store' });
-    if (!resposta.ok) throw new Error('Não foi possível carregar hinos.json');
+        <div id="sortMenu" class="sortMenu">
+            <p>Ordenar por:</p>
+            <input type="radio" id="sortByTitle" name="sortBy"  checked="true" value="1">
+            <label for="sortByTitle">Título</label><br>
 
-    const catalogo = await resposta.json();
-    hinosCarregados = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
-    renderizarLista();
-  } catch (erro) {
-    mensagem.textContent = 'Não foi possível carregar o índice de hinos.';
-    console.error(erro);
-  }
-}
+            <br/>
 
-function mudarOrdenacao(tipo) {
-  ordenacaoAtual = tipo;
-  renderizarLista();
-}
+            <input type="radio" id="sortByNumber" name="sortBy" value="2">
+            <label for="sortByNumber">Número</label>
 
-function renderizarLista() {
-  const lista = document.getElementById('lista-hinos');
-  lista.innerHTML = '';
+            <br/>
+            
+            <hr>
+            <p>Direção:</p>
+            <input type="radio" id="sortDir_1" name="sortDirection"  checked="true" value="1">
+            <label for="sortDir_1">Crescente</label><br>
 
-  const hinos = hinosCarregados.slice();
+            <br/>
 
-  if (ordenacaoAtual === 'numero') {
-    hinos.sort((a, b) => Number(a.numero) - Number(b.numero));
-  } else {
-    hinos.sort((a, b) =>
-      a.titulo.localeCompare(b.titulo, 'pt-BR', { sensitivity: 'base' })
-    );
-  }
+            <input type="radio" id="sortDir_2" name="sortDirection" value="2">
+            <label for="sortDir_2">Decrescente</label>         
+        </div>
 
-  hinos.forEach(hino => {
-    const li = document.createElement('li');
-    const link = document.createElement('a');
+        <div id="themeMenu" class="themeMenu">
+            <p>Fundo:</p>
+            <input type="radio" id="white-theme" name="theme"  checked="true" value="1" onclick="ThemeMode_Toggle(event)">
+            <label for="white-theme">Claro</label><br>
 
-    link.className = 'index-link';
-    link.href = `hino.html?id=${encodeURIComponent(hino.id)}`;
-    link.textContent = `${hino.numero} — ${hino.titulo}`;
+            <br/>
 
-    li.appendChild(link);
-    lista.appendChild(li);
-  });
-}
+            <input type="radio" id="dark_theme" name="theme" value="2" onclick="ThemeMode_Toggle(event)">
+            <label for="dark_theme">Escuro</label>
+        </div>
 
-carregarIndice();
-</script>
+        <div id="aboutMenu" class="aboutMenu">
+            <div>
+                <p id="current-date"></p>
+            </div>
+        </div>
+    </div>
+
+    <p id="indexHeader">ÍNDICE</p>
+    
+    <table id="table-contents"></table>
+    
+    <hr>
+    <p id="mensagem"></p>
+    <div class="admin-link">
+        <a href="admin.html">Admin</a>
+    </div>
 </body>
 </html>

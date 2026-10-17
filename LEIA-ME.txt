@@ -16,6 +16,13 @@ Para adicionar um novo hino:
      "numero": 11,
      "titulo": "Meu Hino",
      "arquivo": "letras/meu-hino.txt"
+     "autor":  (se houver)
+     "copyright": (se houver)
    }
 
-O índice é ordenado alfabeticamente pelo JavaScript.
+3. Menu lateral direito
+Permite ajustar:
+- tamanho da fonte
+- ordenação do índice
+- cor do fundo
+

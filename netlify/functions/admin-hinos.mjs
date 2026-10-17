@@ -158,7 +158,7 @@ async function getHymn(id) {
   return { hymn, letra: letter.text };
 }
 
-async function createHymn(numero, titulo, letra) {
+async function createHymn(numero, titulo, letra, copyright) {
   const { catalog, sha: catalogSha } = await readCatalog();
 
   validateNumber(catalog, numero);
@@ -193,7 +193,8 @@ async function createHymn(numero, titulo, letra) {
     id,
     numero,
     titulo: safeTitle,
-    arquivo: path
+    arquivo: path,
+    copyright
   });
 
   try {
@@ -212,10 +213,10 @@ async function createHymn(numero, titulo, letra) {
     throw e;
   }
 
-  return { id, numero, titulo: safeTitle, arquivo: path };
+  return { id, numero, titulo: safeTitle, arquivo: path, copyright };
 }
 
-async function updateHymn(id, numero, titulo, letra) {
+async function updateHymn(id, numero, titulo, letra, copyright) {
   const { catalog, sha: catalogSha } = await readCatalog();
   const hymn = catalog.hinos.find(h => String(h.id) === String(id));
   if (!hymn) throw new Error("Hino não encontrado.");
@@ -238,6 +239,7 @@ async function updateHymn(id, numero, titulo, letra) {
 
   hymn.numero = numero;
   hymn.titulo = safeTitle;
+  hymn.copyright = copyright;
 
   await putFile(
     "hinos.json",
@@ -335,7 +337,7 @@ export default async (req) => {
     }
 
     if (action === "create") {
-      const hymn = await createHymn(Number(body.numero), body.titulo, body.letra);
+      const hymn = await createHymn(Number(body.numero), body.titulo, body.letra, body.copyright);
       return jsonResponse(200, {
         message: `Hino ${hymn.numero} criado e salvo no GitHub. Ainda não publicado.`,
         hino: hymn
@@ -343,7 +345,7 @@ export default async (req) => {
     }
 
     if (action === "update") {
-      const hymn = await updateHymn(body.id, Number(body.numero), body.titulo, body.letra);
+      const hymn = await updateHymn(body.id, Number(body.numero), body.titulo, body.letra, body.copyright);
       return jsonResponse(200, {
         message: `Hino ${hymn.numero} atualizado e salvo no GitHub. Ainda não publicado.`,
         hino: hymn
