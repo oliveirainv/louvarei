@@ -8,8 +8,10 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
+            //"url": "http://localhost:8080",
+            "url": "http://localhost:8000/index.html",
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": ["--incognito"] //evita o uso do cache do Chrome
         }
     ]
 }

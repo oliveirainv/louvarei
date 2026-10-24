@@ -6,7 +6,7 @@ Arquivos principais:
 - hinos.json   -> catálogo dos hinos
 - letras/      -> um arquivo .txt por hino
 
-Para adicionar um novo hino:
+Para adicionar um novo hino :
 1. Crie o arquivo da letra dentro de letras/, por exemplo:
    letras/meu-hino.txt
 

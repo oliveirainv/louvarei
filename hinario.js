@@ -1,0 +1,493 @@
+
+    const rootStyles = window.getComputedStyle(document.documentElement);
+
+    //Slider de tamanho de fonte
+    const fontSizeSlider = document.getElementById("fontSizeRange");
+    fontSizeSlider.oninput = function()
+    {
+        ChangeFontSize(this.value);  
+    }
+
+    //Controles de ordenação ----------------------------------------------
+    const radioSortBy = document.getElementsByName("sortBy");
+
+    const radioSortByTitle = document.getElementById("sortByTitle");
+    const radioSortByNumber = document.getElementById("sortByNumber");
+    radioSortByTitle.addEventListener('change', () => GetSortBy(1));
+    radioSortByNumber.addEventListener('change', () => GetSortBy(2));
+
+    const radioSortDir_1 = document.getElementById("sortDir_1");
+    const radioSortDir_2 = document.getElementById("sortDir_2");
+    radioSortDir_1.addEventListener('change', () => GetSortDirection(1));
+    radioSortDir_2.addEventListener('change', () => GetSortDirection(2));
+
+  
+    const tableIndex = document.getElementById("table-contents");    
+
+
+    let currentFontSize;
+    let hinosCarregados;
+    let menuIsOpen = false;
+    let sortBy = 1;
+    let sortDirection = 1;
+
+
+   //FUNÇÕES ---------------------------------------------------
+  
+    async function Catalogo_Carrega() {
+
+        const mensagem = document.getElementById('mensagem');
+
+        try {
+			console.log("CarregarDados");
+
+            if (window.location.protocol === 'file:') {
+                throw new Error('Este aplicativo deve ser aberto por um servidor local. Execute "python -m http.server" e abra http://localhost:8000');
+            }
+
+            const resposta = await fetch('./json/hinos.json', { cache: 'no-store' });
+            //const resposta = await fetch('hinos.json', { cache: 'no-store' });
+
+            if (!resposta.ok) throw new Error('Não foi possível carregar hinos.json (erro ' + resposta.status + ')');
+
+            const catalogo = await resposta.json();
+
+            //Se o json for um array usa "catalogo". Se houver um membro que não é array, procura "catalogo.hinos". Se este não existir devolve []
+            hinosCarregados = Array.isArray(catalogo) ? catalogo : (catalogo.hinos || []);
+
+            console.log('Hinos carregados: ' + hinosCarregados.length);
+
+            if(hinosCarregados.length>0)
+            {
+                Indice_Popula();
+            }
+            else{
+                throw new Error('O arquivo do índice está vazio.');
+            }
+
+        } catch (erro) {
+            mensagem.textContent = 'Não foi possível carregar o índice de hinos.' +  erro.message;
+        }
+    }
+
+    
+    //Tamanho fonte músicas
+    function ChangeFontSize(n)
+    {
+        currentFontSize = n;
+
+        console.log("ChangeFontSize() recebeu: " + n);
+        
+        document.documentElement.style.setProperty('--baseFontSize', (n + 'em'));
+
+        //Salva o tamanho da fonte no localStorage
+        Parameters_FontSize_Save();
+
+        //xxxxxxxxxxxx
+/*         console.log("BODY FONT SIZE");
+        console.log(window.getComputedStyle(document.body).getPropertyValue('font-size'));
+
+        console.log("INDEX HEADER");
+        var computedFontSize = window.getComputedStyle(document.getElementById("indexHeader")).fontSize;
+        console.log(computedFontSize); */
+        //XXXXXXXXXX
+
+
+    }
+
+    //Fecha os menus clicando fora deles
+    function DocumentClick(e)
+    {
+        let menuIcon = document.querySelector("#menuIcon");
+        let divMenu = document.querySelector("#sideMenu");
+
+       if(!divMenu.contains(e.target) && divMenu != e.target && menuIcon != e.target)
+        {
+            //console.log("clicou fora");
+
+            CloseAllMenus();
+        }
+    }
+
+
+    function GetSortBy(n)
+    {
+        if(sortBy != n)
+        {
+            sortBy = n;
+            Indice_Popula();
+        }
+    }
+
+    function GetSortDirection(n)
+    {
+        if(sortDirection != n)
+        {
+            sortDirection = n;
+
+            Indice_Popula();
+        }
+    }
+
+
+
+    //Cria linha do Índice
+    function Indice_CriaLinha(id, titulo, numero)
+    {
+        //Cria linha
+        const tr = document.createElement('tr');
+
+        //Cria célula
+        const td1 = document.createElement('td');
+        td1.classList.add('td-number');
+        const td1txt = document.createTextNode(numero);
+
+        td1.appendChild(td1txt);
+        tr.appendChild(td1);
+
+        //Cria célula
+        const td2 = document.createElement('td');
+        const link1 = document.createElement('a');
+        link1.setAttribute('href',('hino.html?Id=' + id));
+        //link1.classList.add('linkLetra');
+        const linktxt= document.createTextNode(titulo);
+
+        link1.appendChild(linktxt);
+        td2.appendChild(link1);
+        tr.appendChild(td2);
+
+        tableIndex.appendChild(tr);
+    }
+
+    //Monta ou remonta o índice
+    function Indice_Popula()
+    {
+       //console.log('Montando índice...');
+       //console.log('Recebi: ' + sortBy + ' - Direção: ' + sortDirection);
+       
+        //Esvazia o índice
+        tableIndex.textContent = '';
+
+        //Ordena os dados conforme tipo e direção de ordenação
+        SortData(sortBy, sortDirection);
+
+        //Cria ou atualiza o localStorage com os parâmetros de ordenação
+        Parameters_Sort_Save();
+
+        //console.log('Ordenando por: ' + sortBy + ' - Direção: ' + sortDirection);
+
+        //Popula o índice, linha por linha
+        for(let i=0;i<hinosCarregados.length;i++)
+        {
+            Indice_CriaLinha(hinosCarregados[i].id, hinosCarregados[i].titulo, hinosCarregados[i].numero);
+        }
+
+        console.log('Índice montado com sucesso!');
+    }
+       
+    function InitFontSlider()
+    {
+       const startValue = parseFloat(rootStyles.getPropertyValue('--baseFontSize').trim());
+
+        fontSizeSlider.value = startValue;  
+    }
+
+    function PrintVersionAndDate()
+    {
+        //Imprime versão, data e hora
+        const version = "1.0";
+
+        document.getElementById("current-date").textContent = "Versão: " + version;
+
+        //var d = new Date();
+        //document.getElementById("current-date").textContent = "Versão: " + version + " - " + d.toLocaleDateString('en-GB');
+    }
+
+    function RelatorioIndice()
+    {
+        const mensagem = document.getElementById('mensagem');
+        let txt = '';
+        for(let i=0;i<hinosCarregados.length;i++)
+        {
+            txt += "==========\n";
+            txt += hinosCarregados[i].titulo + '\n' + hinosCarregados[i].numero + '\n' + hinosCarregados[i].arquivo;
+        }
+
+        mensagem.textContent = txt;
+    }
+
+    //== DADOS ARMAZENADOS NO NAVEGADOR (Web Storage) ==========================================================
+
+    function Parameters_Sort_Load()
+    {
+        if(typeof(Storage) == "undefined") {
+            console.error("Não é possível carregar parâmetros de ordenação. O navegador não suporta Web Storage.");
+            
+            return;       
+        }
+        
+        //Obtém o tipo de ordenação, se não existir, mantém o padrão (1)
+        let result = localStorage.getItem("sortBy");
+
+        if(result != null)
+        {
+            sortBy = parseInt(result);
+
+            //Atualiza interface
+            radioSortBy[sortBy-1].checked = true;
+        }
+
+        //Obtém a direção da ordenação, se não existir, mantém o padrão (1)
+        result = localStorage.getItem("sortDirection");
+
+        if(result != null)
+        {
+            sortDirection = parseInt(result);
+        }
+    }
+
+    function Parameters_Sort_Save()
+    {
+        if (typeof(Storage) !== "undefined") {
+        localStorage.setItem("sortBy", sortBy);
+        localStorage.setItem("sortDirection", sortDirection);
+        } else {
+            console.error("Não é possível salvar parâmetros de ordenação. O navegador não suporta Web Storage.");
+        }
+    }
+
+    function Parameters_FontSize_Load()
+    {
+        if(typeof(Storage) != "undefined") 
+        {
+            let storedFontSize = localStorage.getItem("baseFontSize");
+
+            if(storedFontSize != null) {
+                ChangeFontSize(parseFloat(storedFontSize));
+
+                console.log("Tamanho da fonte carregado: " + storedFontSize);
+            }
+        }
+    }
+
+    function Parameters_FontSize_Save()
+    {
+        if (typeof(Storage) !== "undefined") {
+            localStorage.setItem("baseFontSize", currentFontSize);}
+
+            console.log("Font size saved: " + currentFontSize);
+    }
+
+
+    function Parameters_Theme_Load()
+    {
+        if(typeof(Storage) != "undefined") 
+        {
+            let storedThemeMode = localStorage.getItem("themeMode");
+
+            if(storedThemeMode != null) {
+
+                let themeRadio = document.querySelector(`input[name="theme"][value="${storedThemeMode}"]`);
+                if (themeRadio) {
+                    themeRadio.checked = true;
+                    ThemeMode_Toggle({ target: themeRadio });
+                }
+            }
+        }
+    }
+
+    function Parameters_Theme_Save(themeMode)
+    {
+        if (typeof(Storage) !== "undefined") {  
+
+            localStorage.setItem("themeMode", themeMode);
+
+            console.log("Modo de tema salvo: " + themeMode);
+        }
+    }
+
+    //====================================================================================================
+
+
+    //Ordena array pelo titulo do hino obedecendo a ordem passada (Caixa alta tem precedência sobre caixa baixa, por isso devemos igualá-las)
+    function SortByTitle(sortOrder)
+    {
+        if(sortOrder == 1)
+        {
+            hinosCarregados = hinosCarregados.sort(function(a,b){
+            let x = a.titulo.toLowerCase();
+            let y = b.titulo.toLowerCase();
+            if(x<y){return -1}
+            if(x>y){return 1}
+            
+            return 0});
+        }
+        else{
+            hinosCarregados = hinosCarregados.sort(function(a,b){
+            let x = a.titulo.toLowerCase();
+            let y = b.titulo.toLowerCase();
+            if(x<y){return 1}
+            if(x>y){return -1}
+            
+            return 0});
+        }
+    }
+
+    //Ordena array pelo número do hino obedecendo a ordem passada
+    function SortByNumber(sortOrder)
+    {
+        if(sortOrder == 1)
+        {
+            hinosCarregados = hinosCarregados.sort(function(a,b){return a.numero - b.numero});
+        }
+        else
+        {
+            hinosCarregados = hinosCarregados.sort(function(a,b){return b.numero - a.numero});
+        }
+        
+    }
+
+    //Parâmetros da ordenação
+    function SortData(sortBy, sortDirection)
+    {
+        if(sortBy == 1)
+        {
+            SortByTitle(sortDirection);
+        }
+        else{
+            SortByNumber(sortDirection);
+        }
+
+        //PRINT
+        //RelatorioIndice();
+    }
+
+    function ThemeMode_Toggle(e) {
+
+        if(e.target.value == "1")
+        {   
+            document.body.classList.add("lightTheme");
+            document.body.classList.remove("darkTheme");
+        }
+        else if(e.target.value == "2")
+        {
+            document.body.classList.add("darkTheme");
+		    document.body.classList.remove("lightTheme");
+        }
+
+        //Atualiza o localStorage com o modo de tema selecionado
+        Parameters_Theme_Save(e.target.value);
+    }
+
+
+    //SIDE MENU --------------------------------------------------
+
+    function CloseAllMenus()
+    {
+        CloseSortMenu();
+        CloseFontSizeMenu();
+        CloseThemeMenu();
+        closeNav();
+        CloseAboutMenu();
+
+        menuIsOpen = false;
+    }
+
+    function openNav() {
+
+        if(menuIsOpen)
+        {
+            CloseAllMenus();
+            return;
+        }
+
+        document.getElementById("mySidenav").style = "transform: translateX(0)"; 
+
+        //Atualiza variável
+        menuIsOpen = true;
+
+        //Desativa clicks na main (indesejável quando o menu está aberto)
+        document.getElementById("table-contents").classList.add("disable");
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style = ""; 
+        
+        //Reativa clicks na main
+        document.getElementById("table-contents").classList.remove("disable");
+    }
+
+
+    function OpenSortMenu()
+    {
+        document.getElementById("sortMenu").style = "transform: translateX(0)"; 
+        closeNav();
+
+        //Desativa clicks na main (indesejável quando o menu está aberto)
+        document.getElementById("table-contents").classList.add("disable");
+    }
+
+    function CloseSortMenu()
+    {
+        document.getElementById("sortMenu").style = "";
+    }
+
+    function OpenFontSizeMenu()
+    {
+        document.getElementById("fontSizeMenu").style = "transform: translateX(0)"; 
+        closeNav();
+
+        //Desativa clicks na main (indesejável quando o menu está aberto)
+        document.getElementById("table-contents").classList.add("disable");
+    }
+
+    function CloseFontSizeMenu()
+    {
+        document.getElementById("fontSizeMenu").style = "";
+    }
+
+    function OpenThemeMenu() {
+        document.getElementById("themeMenu").style = "transform: translateX(0)"; 
+        closeNav();
+
+        //Desativa clicks na main (indesejável quando o menu está aberto)
+        document.getElementById("table-contents").classList.add("disable");
+    }
+
+    function CloseThemeMenu() {
+        document.getElementById("themeMenu").style = ""; 
+    }
+
+    function OpenAboutMenu() {
+        document.getElementById("aboutMenu").style = "transform: translateX(0)"; 
+        closeNav();
+
+        //Desativa clicks na main (indesejável quando o menu está aberto)
+        document.getElementById("table-contents").classList.add("disable");
+    }
+
+    function CloseAboutMenu()
+    {
+        document.getElementById("aboutMenu").style = "";
+    }
+    //---------------------------------------------------------------
+
+    //INICIALIZACAO
+    window.onload = function() {
+
+        //Carrega parâmetros, caso já tenham sido salvos no navegador
+        Parameters_FontSize_Load();
+
+        Parameters_Sort_Load();
+
+        Parameters_Theme_Load();
+
+        PrintVersionAndDate();
+
+        InitFontSlider();
+
+        Catalogo_Carrega();
+
+        //Ativa clicks para fechar o side menu
+        document.addEventListener('click', function(e){DocumentClick(e)});
+    };
