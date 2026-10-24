@@ -114,8 +114,8 @@ function normalizeCatalog(raw) {
 }
 
 async function readCatalog() {
-  //const file = await readFile("hinos.json");
-  const file = await readFile("./JSON/hinos.json");
+  const file = await readFile("hinos.json");
+  //const file = await readFile("./JSON/hinos.json");
   return {
     catalog: normalizeCatalog(file.text),
     sha: file.sha
@@ -200,8 +200,8 @@ async function createHymn(numero, titulo, letra, copyright) {
 
   try {
     await putFile(
-      //"hinos.json",
-      "./JSON/hinos.json",
+      "hinos.json",
+      //"./JSON/hinos.json",
       catalogText(catalog),
       `[skip netlify] Adicionar hino ${numero} - ${safeTitle}`,
       catalogSha
@@ -244,8 +244,8 @@ async function updateHymn(id, numero, titulo, letra, copyright) {
   hymn.copyright = copyright;
 
   await putFile(
-    //"hinos.json",
-    "./JSON/hinos.json",
+    "hinos.json",
+    //"./JSON/hinos.json",
     catalogText(catalog),
     `[skip netlify] Atualizar hino ${numero} - ${safeTitle}`,
     catalogSha
@@ -264,8 +264,8 @@ async function deleteHymn(id) {
   // First remove from catalog so public index stops referencing it.
   catalog.hinos.splice(index, 1);
   await putFile(
-    //"hinos.json",
-    "./JSON/hinos.json",
+    "hinos.json",
+    //"./JSON/hinos.json",
     catalogText(catalog),
     `[skip netlify] Excluir hino ${hymn.numero} - ${hymn.titulo}`,
     catalogSha
