@@ -1,5 +1,6 @@
 {
 "hinos":[
+
 {
     "id":1,
     "titulo": "SANTO! SANTO! SANTO! DEUS ONIPOTENTE",
@@ -42,6 +43,14 @@
     "arquivo": "./letras/grandioso_es_tu.txt",
     "autor": "Carl Boberg",
     "copyright": "© 1949, 1953, The Stuart Hine Trust."
+},
+{
+    "id":6,
+    "numero": "12",
+    "titulo": "A DEUS SUPREMO BENFEITOR",
+    "arquivo": "./letras/a_deus_supremo_benfeitor.txt",
+    "autor": "",
+    "copyright": ""
 }
 ]
 }

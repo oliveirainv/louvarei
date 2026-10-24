@@ -4,14 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
             //"url": "http://localhost:8080",
-            "url": "http://localhost:8000/index.html",
+            "url": "http://localhost:8080/index.html",
             "webRoot": "${workspaceFolder}",
-            "runtimeArgs": ["--incognito"] //evita o uso do cache do Chrome
+            "runtimeArgs": ["--incognito"], //evita o uso do cache do Chrome            
         }
     ]
 }
